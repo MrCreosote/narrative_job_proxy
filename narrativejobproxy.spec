@@ -1,6 +1,8 @@
 /* 
 Very simple proxy that reauthenticates requests to the user_and_job_state
-service as the narrative user
+service as the narrative user.
+
+DO NOT DEPLOY PUBLICALLY
 
 */
 

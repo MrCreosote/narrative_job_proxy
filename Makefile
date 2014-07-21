@@ -16,8 +16,10 @@ GEVENT_PROCESSES = 5
 #standalone variables which are replaced when run via /kb/dev_container/Makefile
 DEPLOY_RUNTIME ?= /kb/runtime
 TARGET ?= /kb/deployment
+TOP_DIR = ../..
 
-#include $(TOP_DIR)/tools/Makefile.common.rules
+include $(TOP_DIR)/tools/Makefile.common
+
 SERVICE_DIR ?= $(TARGET)/services/$(SERVICE_NAME)
 PID_FILE = $(SERVICE_DIR)/service.pid
 LOG_FILE = $(SERVICE_DIR)/log/uwsgi.log
@@ -70,11 +72,11 @@ test-scripts:
 test-service:
 	@echo "no tests, workaround service
 
-#include $(TOP_DIR)/tools/Makefile.common.rules
+include $(TOP_DIR)/tools/Makefile.common.rules
 
 # here are the standard KBase deployment targets (deploy,deploy-client, deploy-scripts, & deploy-service)
 
-deploy: deploy-client deploy-service
+deploy: deploy-client deploy-service 
 	echo "OK... Done deploying ALL artifacts (includes clients, docs, scripts and service) of $(SERVICE_NAME)."
 
 deploy-client: deploy-libs deploy-docs
@@ -96,7 +98,7 @@ deploy-docs:
 
 # deploys all libraries and scripts needed to start the service
 
-deploy-service: deploy-service-libs deploy-service-scripts
+deploy-service: deploy-service-libs deploy-service-scripts deploy-cfg
 
 deploy-service-libs:
 	mkdir -p $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)
