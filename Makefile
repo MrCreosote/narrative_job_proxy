@@ -17,28 +17,10 @@ GEVENT_PROCESSES = 5
 DEPLOY_RUNTIME ?= /kb/runtime
 TARGET ?= /kb/deployment
 
-#for the reboot_service script, we need to get a path to dev_container/modules/"module_name".  We can do this simply
-#by getting the absolute path to this makefile.  Note that very old versions of make might not support this line.
-#ROOT_DEV_MODULE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-#KB_DEPLOYMENT_CONFIG ?= $(ROOT_DEV_MODULE_DIR)/deploy.cfg
-
-# including the common makefile gives us a handle to the service directory.  This is
-# where we will (for now) dump the service log files
-#include $(TOP_DIR)/tools/Makefile.common
-
 #include $(TOP_DIR)/tools/Makefile.common.rules
 SERVICE_DIR ?= $(TARGET)/services/$(SERVICE_NAME)
 PID_FILE = $(SERVICE_DIR)/service.pid
 LOG_FILE = $(SERVICE_DIR)/log/uwsgi.log
-#ERR_LOG_FILE = $(SERVICE_DIR)/log/error.log
-
-# You can change these if you are putting your tests somewhere
-# else or if you are not using the standard .t suffix
-
-#detect if we're running in dev or prod mode
-#ifeq ($(KB_TOP), /kb/dev_container)
-#KB_IN_DEV_CON = indevcon
-#endif
 
 # make sure our make test works
 .PHONY : test
@@ -118,10 +100,8 @@ deploy-service: deploy-service-libs deploy-service-scripts
 
 deploy-service-libs:
 	mkdir -p $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)
-	#cp lib/biokbase/$(SERVICE_NAME_PY)/service.py $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)/.
 	touch $(TARGET)/lib/biokbase/__init__.py
 	rsync -arv lib/biokbase/$(SERVICE_NAME_PY)/* $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)/.
-	#cp $(TOP_DIR)/modules/$(SERVICE)/lib/$(SERVICE_PSGI_FILE) $(TARGET)/lib/.
 	mkdir -p $(SERVICE_DIR)
 	echo "deployed service for $(SERVICE_NAME)."
 
