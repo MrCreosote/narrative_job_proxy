@@ -32,6 +32,7 @@ service as the narrative user
         # self.ctx is set by the wsgi application class
         # return variables are: ver
         #BEGIN ver
+        ver = '0.0.1'
         #END ver
 
         #At some point might do deeper type checking...
@@ -45,6 +46,7 @@ service as the narrative user
         # self.ctx is set by the wsgi application class
         # return variables are: error
         #BEGIN get_detailed_error
+        error = 'yeah, like, something totally broke man'
         #END get_detailed_error
 
         #At some point might do deeper type checking...
@@ -58,6 +60,7 @@ service as the narrative user
         # self.ctx is set by the wsgi application class
         # return variables are: info
         #BEGIN get_job_info
+        info = ['foo', 'bar']
         #END get_job_info
 
         #At some point might do deeper type checking...

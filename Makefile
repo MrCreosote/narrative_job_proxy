@@ -36,9 +36,9 @@ LOG_FILE = $(SERVICE_DIR)/log/uwsgi.log
 # else or if you are not using the standard .t suffix
 
 #detect if we're running in dev or prod mode
-ifeq ($(KB_TOP), /kb/dev_container)
-KB_IN_DEV_CON = indevcon
-endif
+#ifeq ($(KB_TOP), /kb/dev_container)
+#KB_IN_DEV_CON = indevcon
+#endif
 
 # make sure our make test works
 .PHONY : test
@@ -48,7 +48,7 @@ default: all
 
 all: build-libs build-docs
 
-build-libs: compile-typespec
+build-libs:
 
 compile-typespec:
 	mkdir -p lib/biokbase/$(SERVICE_NAME_PY)
@@ -95,7 +95,7 @@ test-service:
 deploy: deploy-client deploy-service
 	echo "OK... Done deploying ALL artifacts (includes clients, docs, scripts and service) of $(SERVICE_NAME)."
 
-deploy-client: deploy-libs deploy-docs deploy-scripts
+deploy-client: deploy-libs deploy-docs
 
 deploy-libs:
 	mkdir -p $(TARGET)/lib/Bio/KBase/$(SERVICE_NAME)
@@ -134,7 +134,10 @@ deploy-service-scripts:
 	echo '#!/bin/sh' > ./start_service
 	echo "echo starting $(SERVICE_NAME) service." >> ./start_service
 	echo 'export PYTHONPATH=$(TARGET)/lib:$$PYTHONPATH' >> ./start_service
-	echo 'export KB_DEPLOYMENT_CONFIG=$(KB_DEPLOYMENT_CONFIG)' >> ./start_service
+	echo 'if [ -z "$$KB_DEPLOYMENT_CONFIG" ]' >> ./start_service
+	echo 'then' >> ./start_service
+	echo '    export KB_DEPLOYMENT_CONFIG=$(TARGET)/deployment.cfg' >> ./start_service
+	echo 'fi' >> ./start_service
 	echo 'export KB_SERVICE_NAME=$(KB_SERVICE_NAME)' >> ./start_service
 	echo "uwsgi --master --processes $(MAX_PROCESSES) --cheaper $(MIN_PROCESSES) --gevent $(GEVENT_PROCESSES) \\" >> ./start_service
 	echo "    --http :$(SERVICE_PORT) --http-timeout 600 --pidfile $(PID_FILE) --daemonize $(LOG_FILE) \\" >> ./start_service
@@ -144,7 +147,10 @@ deploy-service-scripts:
 	# Create a debug start script that is not daemonized
 	echo '#!/bin/sh' > ./debug_start_service
 	echo 'export PYTHONPATH=$(TARGET)/lib:$$PYTHONPATH' >> ./debug_start_service
-	echo 'export KB_DEPLOYMENT_CONFIG=$(KB_DEPLOYMENT_CONFIG)' >> ./debug_start_service
+	echo 'if [ -z "$$KB_DEPLOYMENT_CONFIG" ]' >> ./debug_start_service
+	echo 'then' >> ./debug_start_service
+	echo '    export KB_DEPLOYMENT_CONFIG=$(TARGET)/deployment.cfg' >> ./debug_start_service
+	echo 'fi' >> ./debug_start_service
 	echo 'export KB_SERVICE_NAME=$(KB_SERVICE_NAME)' >> ./debug_start_service
 	echo "uwsgi --http :$(SERVICE_PORT) --http-timeout 600 --gevent $(GEVENT_PROCESSES)  \\" >> ./debug_start_service
 	echo "    --wsgi-file $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)/server.py" >> ./debug_start_service
