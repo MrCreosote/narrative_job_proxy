@@ -21,21 +21,21 @@ service as the narrative user
     # the latter method is running.
     #########################################
     #BEGIN_CLASS_HEADER
-#    UPDATE_TOKEN_INTERVAL = 24 * 60 * 60 # 1 day in sec
-    UPDATE_TOKEN_INTERVAL = 10
+    UPDATE_TOKEN_INTERVAL = 24 * 60 * 60 # 1 day in sec
+#    UPDATE_TOKEN_INTERVAL = 10
     
     
     def _update_token(self):
         if self._updating:
             return
-        self._updating = True
         if (time.time() - self._updated_at < self.UPDATE_TOKEN_INTERVAL):
             return
+        self._updating = True
         print('Updating token at ' + str(time.time()))
         self._ujs = UserAndJobState(self._url, user_id=self._user,
                                     password=self._pwd)
         self._updated_at = time.time()
-        self.updating = False
+        self._updating = False
     
     #END_CLASS_HEADER
 
