@@ -80,7 +80,7 @@ service as the narrative user
         #END get_detailed_error
 
         #At some point might do deeper type checking...
-        if not isinstance(error, basestring):
+        if error is not None and not isinstance(error, basestring):
             raise ValueError('Method get_detailed_error return value ' +
                              'error is not type basestring as required.')
         # return the results
