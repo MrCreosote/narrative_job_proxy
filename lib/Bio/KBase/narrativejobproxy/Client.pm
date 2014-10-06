@@ -1,10 +1,17 @@
 package Bio::KBase::narrativejobproxy::Client;
 
 use JSON::RPC::Client;
+use POSIX;
 use strict;
 use Data::Dumper;
 use URI;
 use Bio::KBase::Exceptions;
+my $get_time = sub { time, 0 };
+eval {
+    require Time::HiRes;
+    $get_time = sub { Time::HiRes::gettimeofday() };
+};
+
 use Bio::KBase::AuthToken;
 
 # Client version should match Impl version
@@ -20,7 +27,9 @@ Bio::KBase::narrativejobproxy::Client
 
 
 Very simple proxy that reauthenticates requests to the user_and_job_state
-service as the narrative user
+service as the narrative user.
+
+DO NOT DEPLOY PUBLICALLY
 
 
 =cut
@@ -37,7 +46,41 @@ sub new
     my $self = {
 	client => Bio::KBase::narrativejobproxy::Client::RpcClient->new,
 	url => $url,
+	headers => [],
     };
+
+    chomp($self->{hostname} = `hostname`);
+    $self->{hostname} ||= 'unknown-host';
+
+    #
+    # Set up for propagating KBRPC_TAG and KBRPC_METADATA environment variables through
+    # to invoked services. If these values are not set, we create a new tag
+    # and a metadata field with basic information about the invoking script.
+    #
+    if ($ENV{KBRPC_TAG})
+    {
+	$self->{kbrpc_tag} = $ENV{KBRPC_TAG};
+    }
+    else
+    {
+	my ($t, $us) = &$get_time();
+	$us = sprintf("%06d", $us);
+	my $ts = strftime("%Y-%m-%dT%H:%M:%S.${us}Z", gmtime $t);
+	$self->{kbrpc_tag} = "C:$0:$self->{hostname}:$$:$ts";
+    }
+    push(@{$self->{headers}}, 'Kbrpc-Tag', $self->{kbrpc_tag});
+
+    if ($ENV{KBRPC_METADATA})
+    {
+	$self->{kbrpc_metadata} = $ENV{KBRPC_METADATA};
+	push(@{$self->{headers}}, 'Kbrpc-Metadata', $self->{kbrpc_metadata});
+    }
+
+    if ($ENV{KBRPC_ERROR_DEST})
+    {
+	$self->{kbrpc_error_dest} = $ENV{KBRPC_ERROR_DEST};
+	push(@{$self->{headers}}, 'Kbrpc-Errordest', $self->{kbrpc_error_dest});
+    }
 
     #
     # This module requires authentication.
@@ -109,7 +152,7 @@ sub ver
 							       "Invalid argument count for function ver (received $n, expecting 0)");
     }
 
-    my $result = $self->{client}->call($self->{url}, {
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
 	method => "NarrativeJobProxy.ver",
 	params => \@args,
     });
@@ -144,8 +187,8 @@ sub ver
 =begin html
 
 <pre>
-$job is a NarrativeJobProxy.job_id
-$error is a NarrativeJobProxy.detailed_err
+$job is a job_id
+$error is a detailed_err
 job_id is a string
 detailed_err is a string
 
@@ -155,8 +198,8 @@ detailed_err is a string
 
 =begin text
 
-$job is a NarrativeJobProxy.job_id
-$error is a NarrativeJobProxy.detailed_err
+$job is a job_id
+$error is a detailed_err
 job_id is a string
 detailed_err is a string
 
@@ -194,7 +237,7 @@ sub get_detailed_error
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, {
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
 	method => "NarrativeJobProxy.get_detailed_error",
 	params => \@args,
     });
@@ -229,24 +272,24 @@ sub get_detailed_error
 =begin html
 
 <pre>
-$job is a NarrativeJobProxy.job_id
-$info is a NarrativeJobProxy.job_info
+$job is a job_id
+$info is a job_info
 job_id is a string
 job_info is a reference to a list containing 14 items:
-	0: (job) a NarrativeJobProxy.job_id
-	1: (service) a NarrativeJobProxy.service_name
-	2: (stage) a NarrativeJobProxy.job_stage
-	3: (started) a NarrativeJobProxy.timestamp
-	4: (status) a NarrativeJobProxy.job_status
-	5: (last_update) a NarrativeJobProxy.timestamp
-	6: (prog) a NarrativeJobProxy.total_progress
-	7: (max) a NarrativeJobProxy.max_progress
-	8: (ptype) a NarrativeJobProxy.progress_type
-	9: (est_complete) a NarrativeJobProxy.timestamp
-	10: (complete) a NarrativeJobProxy.boolean
-	11: (error) a NarrativeJobProxy.boolean
-	12: (desc) a NarrativeJobProxy.job_description
-	13: (res) a NarrativeJobProxy.Results
+	0: (job) a job_id
+	1: (service) a service_name
+	2: (stage) a job_stage
+	3: (started) a timestamp
+	4: (status) a job_status
+	5: (last_update) a timestamp
+	6: (prog) a total_progress
+	7: (max) a max_progress
+	8: (ptype) a progress_type
+	9: (est_complete) a timestamp
+	10: (complete) a boolean
+	11: (error) a boolean
+	12: (desc) a job_description
+	13: (res) a Results
 service_name is a string
 job_stage is a string
 timestamp is a string
@@ -261,7 +304,7 @@ Results is a reference to a hash where the following keys are defined:
 	shockurl has a value which is a string
 	workspaceids has a value which is a reference to a list where each element is a string
 	workspaceurl has a value which is a string
-	results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
+	results has a value which is a reference to a list where each element is a Result
 Result is a reference to a hash where the following keys are defined:
 	server_type has a value which is a string
 	url has a value which is a string
@@ -274,24 +317,24 @@ Result is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$job is a NarrativeJobProxy.job_id
-$info is a NarrativeJobProxy.job_info
+$job is a job_id
+$info is a job_info
 job_id is a string
 job_info is a reference to a list containing 14 items:
-	0: (job) a NarrativeJobProxy.job_id
-	1: (service) a NarrativeJobProxy.service_name
-	2: (stage) a NarrativeJobProxy.job_stage
-	3: (started) a NarrativeJobProxy.timestamp
-	4: (status) a NarrativeJobProxy.job_status
-	5: (last_update) a NarrativeJobProxy.timestamp
-	6: (prog) a NarrativeJobProxy.total_progress
-	7: (max) a NarrativeJobProxy.max_progress
-	8: (ptype) a NarrativeJobProxy.progress_type
-	9: (est_complete) a NarrativeJobProxy.timestamp
-	10: (complete) a NarrativeJobProxy.boolean
-	11: (error) a NarrativeJobProxy.boolean
-	12: (desc) a NarrativeJobProxy.job_description
-	13: (res) a NarrativeJobProxy.Results
+	0: (job) a job_id
+	1: (service) a service_name
+	2: (stage) a job_stage
+	3: (started) a timestamp
+	4: (status) a job_status
+	5: (last_update) a timestamp
+	6: (prog) a total_progress
+	7: (max) a max_progress
+	8: (ptype) a progress_type
+	9: (est_complete) a timestamp
+	10: (complete) a boolean
+	11: (error) a boolean
+	12: (desc) a job_description
+	13: (res) a Results
 service_name is a string
 job_stage is a string
 timestamp is a string
@@ -306,7 +349,7 @@ Results is a reference to a hash where the following keys are defined:
 	shockurl has a value which is a string
 	workspaceids has a value which is a reference to a list where each element is a string
 	workspaceurl has a value which is a string
-	results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
+	results has a value which is a reference to a list where each element is a Result
 Result is a reference to a hash where the following keys are defined:
 	server_type has a value which is a string
 	url has a value which is a string
@@ -347,7 +390,7 @@ sub get_job_info
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, {
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
 	method => "NarrativeJobProxy.get_job_info",
 	params => \@args,
     });
@@ -373,7 +416,7 @@ sub get_job_info
 
 sub version {
     my ($self) = @_;
-    my $result = $self->{client}->call($self->{url}, {
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
         method => "NarrativeJobProxy.version",
         params => [],
     });
@@ -860,7 +903,7 @@ shocknodes has a value which is a reference to a list where each element is a st
 shockurl has a value which is a string
 workspaceids has a value which is a reference to a list where each element is a string
 workspaceurl has a value which is a string
-results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
+results has a value which is a reference to a list where each element is a Result
 
 </pre>
 
@@ -873,7 +916,7 @@ shocknodes has a value which is a reference to a list where each element is a st
 shockurl has a value which is a string
 workspaceids has a value which is a reference to a list where each element is a string
 workspaceurl has a value which is a string
-results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
+results has a value which is a reference to a list where each element is a Result
 
 
 =end text
@@ -899,20 +942,20 @@ Information about a job.
 
 <pre>
 a reference to a list containing 14 items:
-0: (job) a NarrativeJobProxy.job_id
-1: (service) a NarrativeJobProxy.service_name
-2: (stage) a NarrativeJobProxy.job_stage
-3: (started) a NarrativeJobProxy.timestamp
-4: (status) a NarrativeJobProxy.job_status
-5: (last_update) a NarrativeJobProxy.timestamp
-6: (prog) a NarrativeJobProxy.total_progress
-7: (max) a NarrativeJobProxy.max_progress
-8: (ptype) a NarrativeJobProxy.progress_type
-9: (est_complete) a NarrativeJobProxy.timestamp
-10: (complete) a NarrativeJobProxy.boolean
-11: (error) a NarrativeJobProxy.boolean
-12: (desc) a NarrativeJobProxy.job_description
-13: (res) a NarrativeJobProxy.Results
+0: (job) a job_id
+1: (service) a service_name
+2: (stage) a job_stage
+3: (started) a timestamp
+4: (status) a job_status
+5: (last_update) a timestamp
+6: (prog) a total_progress
+7: (max) a max_progress
+8: (ptype) a progress_type
+9: (est_complete) a timestamp
+10: (complete) a boolean
+11: (error) a boolean
+12: (desc) a job_description
+13: (res) a Results
 
 </pre>
 
@@ -921,20 +964,20 @@ a reference to a list containing 14 items:
 =begin text
 
 a reference to a list containing 14 items:
-0: (job) a NarrativeJobProxy.job_id
-1: (service) a NarrativeJobProxy.service_name
-2: (stage) a NarrativeJobProxy.job_stage
-3: (started) a NarrativeJobProxy.timestamp
-4: (status) a NarrativeJobProxy.job_status
-5: (last_update) a NarrativeJobProxy.timestamp
-6: (prog) a NarrativeJobProxy.total_progress
-7: (max) a NarrativeJobProxy.max_progress
-8: (ptype) a NarrativeJobProxy.progress_type
-9: (est_complete) a NarrativeJobProxy.timestamp
-10: (complete) a NarrativeJobProxy.boolean
-11: (error) a NarrativeJobProxy.boolean
-12: (desc) a NarrativeJobProxy.job_description
-13: (res) a NarrativeJobProxy.Results
+0: (job) a job_id
+1: (service) a service_name
+2: (stage) a job_stage
+3: (started) a timestamp
+4: (status) a job_status
+5: (last_update) a timestamp
+6: (prog) a total_progress
+7: (max) a max_progress
+8: (ptype) a progress_type
+9: (est_complete) a timestamp
+10: (complete) a boolean
+11: (error) a boolean
+12: (desc) a job_description
+13: (res) a Results
 
 
 =end text
@@ -947,21 +990,27 @@ a reference to a list containing 14 items:
 
 package Bio::KBase::narrativejobproxy::Client::RpcClient;
 use base 'JSON::RPC::Client';
+use POSIX;
+use strict;
 
 #
 # Override JSON::RPC::Client::call because it doesn't handle error returns properly.
 #
 
 sub call {
-    my ($self, $uri, $obj) = @_;
+    my ($self, $uri, $headers, $obj) = @_;
     my $result;
 
-    if ($uri =~ /\?/) {
-       $result = $self->_get($uri);
-    }
-    else {
-        Carp::croak "not hashref." unless (ref $obj eq 'HASH');
-        $result = $self->_post($uri, $obj);
+
+    {
+	if ($uri =~ /\?/) {
+	    $result = $self->_get($uri);
+	}
+	else {
+	    Carp::croak "not hashref." unless (ref $obj eq 'HASH');
+	    $result = $self->_post($uri, $headers, $obj);
+	}
+
     }
 
     my $service = $obj->{method} =~ /^system\./ if ( $obj );
@@ -989,7 +1038,7 @@ sub call {
 
 
 sub _post {
-    my ($self, $uri, $obj) = @_;
+    my ($self, $uri, $headers, $obj) = @_;
     my $json = $self->json;
 
     $obj->{version} ||= $self->{version} || '1.1';
@@ -1016,6 +1065,7 @@ sub _post {
         Content_Type   => $self->{content_type},
         Content        => $content,
         Accept         => 'application/json',
+	@$headers,
 	($self->{token} ? (Authorization => $self->{token}) : ()),
     );
 }

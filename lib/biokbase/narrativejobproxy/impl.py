@@ -11,7 +11,9 @@ class NarrativeJobProxy:
 
     Module Description:
     Very simple proxy that reauthenticates requests to the user_and_job_state
-service as the narrative user
+service as the narrative user.
+
+DO NOT DEPLOY PUBLICALLY
     '''
 
     ######## WARNING FOR GEVENT USERS #######
@@ -57,44 +59,44 @@ service as the narrative user
         #END_CONSTRUCTOR
         pass
 
-    def ver(self):
-        # self.ctx is set by the wsgi application class
+    def ver(self, ctx):
+        # ctx is the context object
         # return variables are: ver
         #BEGIN ver
         ver = '0.0.1'
         #END ver
 
-        #At some point might do deeper type checking...
+        # At some point might do deeper type checking...
         if not isinstance(ver, basestring):
             raise ValueError('Method ver return value ' +
                              'ver is not type basestring as required.')
         # return the results
         return [ver]
 
-    def get_detailed_error(self, job):
-        # self.ctx is set by the wsgi application class
+    def get_detailed_error(self, ctx, job):
+        # ctx is the context object
         # return variables are: error
         #BEGIN get_detailed_error
         self._update_token()
         error = self._ujs.get_detailed_error(job)
         #END get_detailed_error
 
-        #At some point might do deeper type checking...
-        if error is not None and not isinstance(error, basestring):
+        # At some point might do deeper type checking...
+        if not isinstance(error, basestring):
             raise ValueError('Method get_detailed_error return value ' +
                              'error is not type basestring as required.')
         # return the results
         return [error]
 
-    def get_job_info(self, job):
-        # self.ctx is set by the wsgi application class
+    def get_job_info(self, ctx, job):
+        # ctx is the context object
         # return variables are: info
         #BEGIN get_job_info
         self._update_token()
         info = self._ujs.get_job_info(job)
         #END get_job_info
 
-        #At some point might do deeper type checking...
+        # At some point might do deeper type checking...
         if not isinstance(info, list):
             raise ValueError('Method get_job_info return value ' +
                              'info is not type list as required.')
