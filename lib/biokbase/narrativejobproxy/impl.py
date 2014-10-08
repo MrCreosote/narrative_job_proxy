@@ -23,10 +23,9 @@ DO NOT DEPLOY PUBLICALLY
     # the latter method is running.
     #########################################
     #BEGIN_CLASS_HEADER
-    UPDATE_TOKEN_INTERVAL = 24 * 60 * 60 # 1 day in sec
+    UPDATE_TOKEN_INTERVAL = 24 * 60 * 60  # 1 day in sec
 #    UPDATE_TOKEN_INTERVAL = 10
-    
-    
+
     def _update_token(self):
         if self._updating:
             return
@@ -34,11 +33,13 @@ DO NOT DEPLOY PUBLICALLY
             return
         self._updating = True
         print('Updating token at ' + str(time.time()))
-        self._ujs = UserAndJobState(self._url, user_id=self._user,
-                                    password=self._pwd)
-        self._updated_at = time.time()
-        self._updating = False
-    
+        try:
+            self._ujs = UserAndJobState(self._url, user_id=self._user,
+                                        password=self._pwd)
+            self._updated_at = time.time()
+        finally:  # otherwise token will never be updated
+            self._updating = False
+
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
