@@ -124,7 +124,7 @@ deploy-service-scripts:
 	echo "uwsgi --master --processes $(MAX_PROCESSES) --cheaper $(MIN_PROCESSES) --gevent $(GEVENT_PROCESSES) \\" >> ./start_service
 	echo "    --http :$(SERVICE_PORT) --http-timeout 600 --pidfile $(PID_FILE) --daemonize $(LOG_FILE) \\" >> ./start_service
 	echo "    --wsgi-file $(TARGET)/lib/biokbase/$(SERVICE_NAME_PY)/server.py" >> ./start_service
-	echo "echo $(SERVICE_NAME) service is listening on port $(SERVICE_PORT).\n" >> ./start_service
+	echo "echo $(SERVICE_NAME) service is listening on port $(SERVICE_PORT)." >> ./start_service
 	
 	# Create a debug start script that is not daemonized
 	echo '#!/bin/sh' > ./debug_start_service
@@ -141,15 +141,22 @@ deploy-service-scripts:
 	echo '#!/bin/sh' > ./stop_service
 	echo "echo trying to stop $(SERVICE_NAME) service." >> ./stop_service
 	echo "if [ ! -f $(PID_FILE) ] ; then " >> ./stop_service
-	echo "\techo \"No pid file: $(PID_FILE) found for service $(SERVICE_NAME).\"\n\texit 1\nfi" >> ./stop_service
-	echo "uwsgi --stop $(PID_FILE)\n" >> ./stop_service
+	echo "    echo \"No pid file: $(PID_FILE) found for service $(SERVICE_NAME).\"" >> ./stop_service
+	echo "    exit 1" >> ./stop_service
+	echo "fi" >> ./stop_service
+	echo "uwsgi --stop $(PID_FILE)" >> ./stop_service
 	
 	# Create a script to reboot the service by redeploying the service and reloading code
 	echo '#!/bin/sh' > ./reboot_service
 	echo '# auto-generated script to stop the service, redeploy service implementation, and start the servce' >> ./reboot_service
 	echo "if [ ! -f $(PID_FILE) ] ; then " >> ./reboot_service
-	echo "\techo \"No pid file: \$(PID_FILE) found for service $(SERVICE_NAME).\"\n\texit 1\nfi" >> ./reboot_service
-	echo "cd $(ROOT_DEV_MODULE_DIR)\nmake deploy-service-libs\ncd -\nuwsgi --reload $(PID_FILE)" >> ./reboot_service
+	echo "   echo \"No pid file: $(PID_FILE) found for service $(SERVICE_NAME).\"" >> ./reboot_service
+	echo "   exit 1" >> ./reboot_service
+	echo "fi" >> ./reboot_service
+	echo "cd $(ROOT_DEV_MODULE_DIR)" >> ./reboot_service
+	echo "make deploy-service-libs" >> ./reboot_service
+	echo "cd -" >> ./reboot_service
+	echo "uwsgi --reload $(PID_FILE)" >> ./reboot_service
 	
 	# Actually run the deployment of these scripts
 	chmod +x start_service stop_service reboot_service debug_start_service
