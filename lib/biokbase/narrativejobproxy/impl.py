@@ -1,5 +1,6 @@
 #BEGIN_HEADER
 from biokbase.userandjobstate.client import UserAndJobState
+from biokbase.narrativejobproxy.NarrativeJobServiceClient import NarrativeJobService
 import time
 #END_HEADER
 
@@ -36,6 +37,8 @@ DO NOT DEPLOY PUBLICALLY
         try:
             self._ujs = UserAndJobState(self._url, user_id=self._user,
                                         password=self._pwd)
+            self._njs = NarrativeJobService(self._njs_url, user_id=self._user,
+                                        password=self._pwd)
             self._updated_at = time.time()
         finally:  # otherwise token will never be updated
             self._updating = False
@@ -54,6 +57,9 @@ DO NOT DEPLOY PUBLICALLY
         self._url = config.get('ujs_url')
         if not self._url:
             raise ValueError('UJS url missing from deploy.cfg')
+        self._njs_url = config.get('njs_url')
+        if not self._njs_url:
+            raise ValueError('NJS url missing from deploy.cfg')
         self._updated_at = - self.UPDATE_TOKEN_INTERVAL
         self._updating = False
         self._update_token()
@@ -64,7 +70,7 @@ DO NOT DEPLOY PUBLICALLY
         # ctx is the context object
         # return variables are: ver
         #BEGIN ver
-        ver = '0.0.1'
+        ver = '0.0.2'
         #END ver
 
         # At some point might do deeper type checking...
@@ -103,3 +109,33 @@ DO NOT DEPLOY PUBLICALLY
                              'info is not type list as required.')
         # return the results
         return [info]
+
+    def check_app_state(self, ctx, job_id):
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN check_app_state
+        self._update_token()
+        returnVal = self._njs.check_app_state(job_id)
+        #END check_app_state
+
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, dict):
+            raise ValueError('Method check_app_state return value ' +
+                             'returnVal is not type dict as required.')
+        # return the results
+        return [returnVal]
+
+    def get_job_logs(self, ctx, params):
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN get_job_logs
+        self._update_token()
+        returnVal = self._njs.get_job_logs(params)
+        #END get_job_logs
+
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, dict):
+            raise ValueError('Method get_job_logs return value ' +
+                             'returnVal is not type dict as required.')
+        # return the results
+        return [returnVal]
