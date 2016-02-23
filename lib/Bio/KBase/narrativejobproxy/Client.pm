@@ -187,8 +187,8 @@ sub ver
 =begin html
 
 <pre>
-$job is a job_id
-$error is a detailed_err
+$job is a NarrativeJobProxy.job_id
+$error is a NarrativeJobProxy.detailed_err
 job_id is a string
 detailed_err is a string
 
@@ -198,8 +198,8 @@ detailed_err is a string
 
 =begin text
 
-$job is a job_id
-$error is a detailed_err
+$job is a NarrativeJobProxy.job_id
+$error is a NarrativeJobProxy.detailed_err
 job_id is a string
 detailed_err is a string
 
@@ -272,24 +272,24 @@ sub get_detailed_error
 =begin html
 
 <pre>
-$job is a job_id
-$info is a job_info
+$job is a NarrativeJobProxy.job_id
+$info is a NarrativeJobProxy.job_info
 job_id is a string
 job_info is a reference to a list containing 14 items:
-	0: (job) a job_id
-	1: (service) a service_name
-	2: (stage) a job_stage
-	3: (started) a timestamp
-	4: (status) a job_status
-	5: (last_update) a timestamp
-	6: (prog) a total_progress
-	7: (max) a max_progress
-	8: (ptype) a progress_type
-	9: (est_complete) a timestamp
-	10: (complete) a boolean
-	11: (error) a boolean
-	12: (desc) a job_description
-	13: (res) a Results
+	0: (job) a NarrativeJobProxy.job_id
+	1: (service) a NarrativeJobProxy.service_name
+	2: (stage) a NarrativeJobProxy.job_stage
+	3: (started) a NarrativeJobProxy.timestamp
+	4: (status) a NarrativeJobProxy.job_status
+	5: (last_update) a NarrativeJobProxy.timestamp
+	6: (prog) a NarrativeJobProxy.total_progress
+	7: (max) a NarrativeJobProxy.max_progress
+	8: (ptype) a NarrativeJobProxy.progress_type
+	9: (est_complete) a NarrativeJobProxy.timestamp
+	10: (complete) a NarrativeJobProxy.boolean
+	11: (error) a NarrativeJobProxy.boolean
+	12: (desc) a NarrativeJobProxy.job_description
+	13: (res) a NarrativeJobProxy.Results
 service_name is a string
 job_stage is a string
 timestamp is a string
@@ -304,7 +304,7 @@ Results is a reference to a hash where the following keys are defined:
 	shockurl has a value which is a string
 	workspaceids has a value which is a reference to a list where each element is a string
 	workspaceurl has a value which is a string
-	results has a value which is a reference to a list where each element is a Result
+	results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
 Result is a reference to a hash where the following keys are defined:
 	server_type has a value which is a string
 	url has a value which is a string
@@ -317,24 +317,24 @@ Result is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$job is a job_id
-$info is a job_info
+$job is a NarrativeJobProxy.job_id
+$info is a NarrativeJobProxy.job_info
 job_id is a string
 job_info is a reference to a list containing 14 items:
-	0: (job) a job_id
-	1: (service) a service_name
-	2: (stage) a job_stage
-	3: (started) a timestamp
-	4: (status) a job_status
-	5: (last_update) a timestamp
-	6: (prog) a total_progress
-	7: (max) a max_progress
-	8: (ptype) a progress_type
-	9: (est_complete) a timestamp
-	10: (complete) a boolean
-	11: (error) a boolean
-	12: (desc) a job_description
-	13: (res) a Results
+	0: (job) a NarrativeJobProxy.job_id
+	1: (service) a NarrativeJobProxy.service_name
+	2: (stage) a NarrativeJobProxy.job_stage
+	3: (started) a NarrativeJobProxy.timestamp
+	4: (status) a NarrativeJobProxy.job_status
+	5: (last_update) a NarrativeJobProxy.timestamp
+	6: (prog) a NarrativeJobProxy.total_progress
+	7: (max) a NarrativeJobProxy.max_progress
+	8: (ptype) a NarrativeJobProxy.progress_type
+	9: (est_complete) a NarrativeJobProxy.timestamp
+	10: (complete) a NarrativeJobProxy.boolean
+	11: (error) a NarrativeJobProxy.boolean
+	12: (desc) a NarrativeJobProxy.job_description
+	13: (res) a NarrativeJobProxy.Results
 service_name is a string
 job_stage is a string
 timestamp is a string
@@ -349,7 +349,7 @@ Results is a reference to a hash where the following keys are defined:
 	shockurl has a value which is a string
 	workspaceids has a value which is a reference to a list where each element is a string
 	workspaceurl has a value which is a string
-	results has a value which is a reference to a list where each element is a Result
+	results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
 Result is a reference to a hash where the following keys are defined:
 	server_type has a value which is a string
 	url has a value which is a string
@@ -414,6 +414,206 @@ sub get_job_info
 
 
 
+=head2 check_app_state
+
+  $return = $obj->check_app_state($job_id)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$job_id is a NarrativeJobProxy.job_id
+$return is a NarrativeJobProxy.app_state
+job_id is a string
+app_state is a reference to a hash where the following keys are defined:
+	job_id has a value which is a NarrativeJobProxy.job_id
+	job_state has a value which is a string
+	running_step_id has a value which is a string
+	step_outputs has a value which is a reference to a hash where the key is a string and the value is a string
+	step_errors has a value which is a reference to a hash where the key is a string and the value is a string
+	step_job_ids has a value which is a reference to a hash where the key is a string and the value is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$job_id is a NarrativeJobProxy.job_id
+$return is a NarrativeJobProxy.app_state
+job_id is a string
+app_state is a reference to a hash where the following keys are defined:
+	job_id has a value which is a NarrativeJobProxy.job_id
+	job_state has a value which is a string
+	running_step_id has a value which is a string
+	step_outputs has a value which is a reference to a hash where the key is a string and the value is a string
+	step_errors has a value which is a reference to a hash where the key is a string and the value is a string
+	step_job_ids has a value which is a reference to a hash where the key is a string and the value is a string
+
+
+=end text
+
+=item Description
+
+Copy of method from https://github.com/kbase/njs_wrapper/blob/master/NJSWrapper.spec
+
+=back
+
+=cut
+
+sub check_app_state
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function check_app_state (received $n, expecting 1)");
+    }
+    {
+	my($job_id) = @args;
+
+	my @_bad_arguments;
+        (!ref($job_id)) or push(@_bad_arguments, "Invalid type for argument 1 \"job_id\" (value was \"$job_id\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to check_app_state:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'check_app_state');
+	}
+    }
+
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "NarrativeJobProxy.check_app_state",
+	params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'check_app_state',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method check_app_state",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'check_app_state',
+				       );
+    }
+}
+
+
+
+=head2 get_job_logs
+
+  $return = $obj->get_job_logs($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a NarrativeJobProxy.GetJobLogsParams
+$return is a NarrativeJobProxy.GetJobLogsResults
+GetJobLogsParams is a reference to a hash where the following keys are defined:
+	job_id has a value which is a NarrativeJobProxy.job_id
+	skip_lines has a value which is an int
+job_id is a string
+GetJobLogsResults is a reference to a hash where the following keys are defined:
+	lines has a value which is a reference to a list where each element is a NarrativeJobProxy.LogLine
+	last_line_number has a value which is an int
+LogLine is a reference to a hash where the following keys are defined:
+	line has a value which is a string
+	is_error has a value which is a NarrativeJobProxy.boolean
+boolean is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a NarrativeJobProxy.GetJobLogsParams
+$return is a NarrativeJobProxy.GetJobLogsResults
+GetJobLogsParams is a reference to a hash where the following keys are defined:
+	job_id has a value which is a NarrativeJobProxy.job_id
+	skip_lines has a value which is an int
+job_id is a string
+GetJobLogsResults is a reference to a hash where the following keys are defined:
+	lines has a value which is a reference to a list where each element is a NarrativeJobProxy.LogLine
+	last_line_number has a value which is an int
+LogLine is a reference to a hash where the following keys are defined:
+	line has a value which is a string
+	is_error has a value which is a NarrativeJobProxy.boolean
+boolean is an int
+
+
+=end text
+
+=item Description
+
+Copy of method from https://github.com/kbase/njs_wrapper/blob/master/NJSWrapper.spec
+
+=back
+
+=cut
+
+sub get_job_logs
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_job_logs (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_job_logs:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_job_logs');
+	}
+    }
+
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "NarrativeJobProxy.get_job_logs",
+	params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_job_logs',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_job_logs",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_job_logs',
+				       );
+    }
+}
+
+
+
 sub version {
     my ($self) = @_;
     my $result = $self->{client}->call($self->{url}, $self->{headers}, {
@@ -425,16 +625,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'get_job_info',
+                method_name => 'get_job_logs',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method get_job_info",
+            error => "Error invoking method get_job_logs",
             status_line => $self->{client}->status_line,
-            method_name => 'get_job_info',
+            method_name => 'get_job_logs',
         );
     }
 }
@@ -903,7 +1103,7 @@ shocknodes has a value which is a reference to a list where each element is a st
 shockurl has a value which is a string
 workspaceids has a value which is a reference to a list where each element is a string
 workspaceurl has a value which is a string
-results has a value which is a reference to a list where each element is a Result
+results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
 
 </pre>
 
@@ -916,7 +1116,7 @@ shocknodes has a value which is a reference to a list where each element is a st
 shockurl has a value which is a string
 workspaceids has a value which is a reference to a list where each element is a string
 workspaceurl has a value which is a string
-results has a value which is a reference to a list where each element is a Result
+results has a value which is a reference to a list where each element is a NarrativeJobProxy.Result
 
 
 =end text
@@ -942,20 +1142,20 @@ Information about a job.
 
 <pre>
 a reference to a list containing 14 items:
-0: (job) a job_id
-1: (service) a service_name
-2: (stage) a job_stage
-3: (started) a timestamp
-4: (status) a job_status
-5: (last_update) a timestamp
-6: (prog) a total_progress
-7: (max) a max_progress
-8: (ptype) a progress_type
-9: (est_complete) a timestamp
-10: (complete) a boolean
-11: (error) a boolean
-12: (desc) a job_description
-13: (res) a Results
+0: (job) a NarrativeJobProxy.job_id
+1: (service) a NarrativeJobProxy.service_name
+2: (stage) a NarrativeJobProxy.job_stage
+3: (started) a NarrativeJobProxy.timestamp
+4: (status) a NarrativeJobProxy.job_status
+5: (last_update) a NarrativeJobProxy.timestamp
+6: (prog) a NarrativeJobProxy.total_progress
+7: (max) a NarrativeJobProxy.max_progress
+8: (ptype) a NarrativeJobProxy.progress_type
+9: (est_complete) a NarrativeJobProxy.timestamp
+10: (complete) a NarrativeJobProxy.boolean
+11: (error) a NarrativeJobProxy.boolean
+12: (desc) a NarrativeJobProxy.job_description
+13: (res) a NarrativeJobProxy.Results
 
 </pre>
 
@@ -964,20 +1164,169 @@ a reference to a list containing 14 items:
 =begin text
 
 a reference to a list containing 14 items:
-0: (job) a job_id
-1: (service) a service_name
-2: (stage) a job_stage
-3: (started) a timestamp
-4: (status) a job_status
-5: (last_update) a timestamp
-6: (prog) a total_progress
-7: (max) a max_progress
-8: (ptype) a progress_type
-9: (est_complete) a timestamp
-10: (complete) a boolean
-11: (error) a boolean
-12: (desc) a job_description
-13: (res) a Results
+0: (job) a NarrativeJobProxy.job_id
+1: (service) a NarrativeJobProxy.service_name
+2: (stage) a NarrativeJobProxy.job_stage
+3: (started) a NarrativeJobProxy.timestamp
+4: (status) a NarrativeJobProxy.job_status
+5: (last_update) a NarrativeJobProxy.timestamp
+6: (prog) a NarrativeJobProxy.total_progress
+7: (max) a NarrativeJobProxy.max_progress
+8: (ptype) a NarrativeJobProxy.progress_type
+9: (est_complete) a NarrativeJobProxy.timestamp
+10: (complete) a NarrativeJobProxy.boolean
+11: (error) a NarrativeJobProxy.boolean
+12: (desc) a NarrativeJobProxy.job_description
+13: (res) a NarrativeJobProxy.Results
+
+
+=end text
+
+=back
+
+
+
+=head2 app_state
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+job_id has a value which is a NarrativeJobProxy.job_id
+job_state has a value which is a string
+running_step_id has a value which is a string
+step_outputs has a value which is a reference to a hash where the key is a string and the value is a string
+step_errors has a value which is a reference to a hash where the key is a string and the value is a string
+step_job_ids has a value which is a reference to a hash where the key is a string and the value is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+job_id has a value which is a NarrativeJobProxy.job_id
+job_state has a value which is a string
+running_step_id has a value which is a string
+step_outputs has a value which is a reference to a hash where the key is a string and the value is a string
+step_errors has a value which is a reference to a hash where the key is a string and the value is a string
+step_job_ids has a value which is a reference to a hash where the key is a string and the value is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 LogLine
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+line has a value which is a string
+is_error has a value which is a NarrativeJobProxy.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+line has a value which is a string
+is_error has a value which is a NarrativeJobProxy.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 GetJobLogsParams
+
+=over 4
+
+
+
+=item Description
+
+skip_lines - optional parameter, number of lines to skip (in case they were 
+    already loaded before).
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+job_id has a value which is a NarrativeJobProxy.job_id
+skip_lines has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+job_id has a value which is a NarrativeJobProxy.job_id
+skip_lines has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 GetJobLogsResults
+
+=over 4
+
+
+
+=item Description
+
+last_line_number - common number of lines (including those in skip_lines 
+    parameter), this number can be used as next skip_lines value to
+    skip already loaded lines next time.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+lines has a value which is a reference to a list where each element is a NarrativeJobProxy.LogLine
+last_line_number has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+lines has a value which is a reference to a list where each element is a NarrativeJobProxy.LogLine
+last_line_number has a value which is an int
 
 
 =end text

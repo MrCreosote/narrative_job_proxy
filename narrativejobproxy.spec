@@ -116,4 +116,44 @@ module NarrativeJobProxy {
 	
 	/* Get information about a job. */
 	funcdef get_job_info(job_id job) returns(job_info info);
+	
+	typedef structure {
+		job_id job_id;
+		string job_state;
+		string running_step_id;
+		mapping<string, string> step_outputs;
+		mapping<string, string> step_errors;
+		mapping<string, string> step_job_ids;
+	} app_state;
+	
+	/* Copy of method from https://github.com/kbase/njs_wrapper/blob/master/NJSWrapper.spec */
+	funcdef check_app_state(job_id job_id) returns (app_state) authentication required;
+	
+	typedef structure {
+		string line;
+		boolean is_error;
+	} LogLine;
+
+	/*
+		skip_lines - optional parameter, number of lines to skip (in case they were 
+		already loaded before).
+	*/
+	typedef structure {
+		job_id job_id;
+		int skip_lines;
+	} GetJobLogsParams;
+
+	/*
+		last_line_number - common number of lines (including those in skip_lines 
+			parameter), this number can be used as next skip_lines value to
+			skip already loaded lines next time.
+	*/
+	typedef structure {
+		list<LogLine> lines;
+		int last_line_number;
+	} GetJobLogsResults;
+
+	/* Copy of method from https://github.com/kbase/njs_wrapper/blob/master/NJSWrapper.spec */
+	funcdef get_job_logs(GetJobLogsParams params) returns (GetJobLogsResults)
+		authentication required;
 };
