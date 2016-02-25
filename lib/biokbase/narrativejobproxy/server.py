@@ -276,6 +276,14 @@ class Application(object):
                              name='NarrativeJobProxy.get_job_info',
                              types=[basestring])
         self.method_authentication['NarrativeJobProxy.get_job_info'] = 'required'
+        self.rpc_service.add(impl_NarrativeJobProxy.check_app_state,
+                             name='NarrativeJobProxy.check_app_state',
+                             types=[basestring])
+        self.method_authentication['NarrativeJobProxy.check_app_state'] = 'required'
+        self.rpc_service.add(impl_NarrativeJobProxy.get_job_logs,
+                             name='NarrativeJobProxy.get_job_logs',
+                             types=[dict])
+        self.method_authentication['NarrativeJobProxy.get_job_logs'] = 'required'
         self.auth_client = biokbase.nexus.Client(
             config={'server': 'nexus.api.globusonline.org',
                     'verify_ssl': True,
